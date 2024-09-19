@@ -26,6 +26,23 @@ async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text("Please select a command!", reply_markup=reply_markup)
 
 
+async def help(update: Update, context: CallbackContext) -> None:
+    # determining who the user is
+    wade = update.message.from_user.full_name
+    check = update.message.from_user.username
+    print(wade)
+    # keyboard layout
+    keyboard = [
+        ["/gpt", "/help"]
+    ]
+    # making the markup
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    await update.message.reply_text("""/gpt: Use it to ask a question from ChatGPT, Then Proceed to ask your question.\n
+    /cancel: Use it To Cancel your /gpt command""", reply_markup=reply_markup)
+
+
+
 async def gpt(update: Update, context: CallbackContext) -> None:
     global gptc
     gptc = True
@@ -62,6 +79,7 @@ def main():
     application = Application.builder().token(Token).build()
 
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("gpt", gpt))
     application.add_handler(MessageHandler(None, mem))
     application.run_polling()

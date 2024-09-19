@@ -23,6 +23,15 @@ async def gpt(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text("Please send the message you want to ask ChatGPT.")
 
 
+async def cancel(update: Update, context: CallbackContext) -> None:
+    global gptc
+    if gptc:
+        gptc = False
+        await update.message.reply_text("The ChatGPT is inactivated")
+    else:
+        await update.message.reply_text("The ChatGPT is not active")
+
+
 async def mem(update: Update, context: CallbackContext) -> None:
     global gptc
     print(update.message.text)

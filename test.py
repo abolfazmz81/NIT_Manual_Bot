@@ -42,18 +42,25 @@ async def help(update: Update, context: CallbackContext) -> None:
     /cancel: Use it To Cancel your /gpt command""", reply_markup=reply_markup)
 
 
-
 async def gpt(update: Update, context: CallbackContext) -> None:
     global gptc
     gptc = True
-    await update.message.reply_text("Please send the message you want to ask ChatGPT.")
+    keyboard = [
+        ["/cancel"]
+    ]
+    reply = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    await update.message.reply_text("Please send the message you want to ask ChatGPT.", reply_markup=reply)
 
 
 async def cancel(update: Update, context: CallbackContext) -> None:
     global gptc
     if gptc:
         gptc = False
-        await update.message.reply_text("The ChatGPT is inactivated")
+        keyboard = [
+            ["/gpt", "/help"]
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        await update.message.reply_text("The ChatGPT is inactivated",reply_markup=reply_markup)
     else:
         await update.message.reply_text("The ChatGPT is not active")
 
@@ -81,6 +88,7 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("gpt", gpt))
+    application.add_handler(CommandHandler("cancel", cancel))
     application.add_handler(MessageHandler(None, mem))
     application.run_polling()
 

@@ -11,9 +11,8 @@ gptc = True
 
 async def start(update: Update, context: CallbackContext) -> None:
     # determining who the user is
-    wade = update.message.from_user.full_name
-    check = update.message.from_user.username
-    print(wade)
+    name = update.message.from_user.full_name
+    print(name)
     # keyboard layout
     keyboard = [
         ["/gpt", "/help"]
@@ -21,7 +20,7 @@ async def start(update: Update, context: CallbackContext) -> None:
     # making the markup
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     # wlcoming the user
-    await update.message.reply_text(f'hi {wade}!, welcome to the show')
+    await update.message.reply_text(f'hi {name}!, welcome to the show')
 
     await update.message.reply_text("Please select a command!", reply_markup=reply_markup)
 

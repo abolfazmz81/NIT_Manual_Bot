@@ -1,12 +1,14 @@
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler
+from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters
 from langchain_openai import ChatOpenAI
 import config
+import extractor
 
-llm = ChatOpenAI(model="gpt-3.5-turbo", base_url="https://api.avalai.ir/v1",
+llm = ChatOpenAI(model="gpt-4o-mini", base_url="https://api.avalai.ir/v1",
                  api_key=config.api_token)
 
 gptc = True
+ayin97 = extractor.return_97("1633766767-ayinnamehkarshenasi97-v3.pdf")
 
 
 async def start(update: Update, context: CallbackContext) -> None:
@@ -66,11 +68,24 @@ async def cancel(update: Update, context: CallbackContext) -> None:
 
 async def mem(update: Update, context: CallbackContext) -> None:
     global gptc
+    global ayin97
     print(update.message.text)
     if gptc:
-        query = update.message.text
+        question = update.message.text
+        query = f"""
+        Answer the question specified in triple backticks based on the text Provided in <>, and be specific about it, \
+        if you couldn't find any related information in the text, reply with irrelevant question, \
+        both text and question are in persian(farsi), and you should as well answer in persian.\n
+        text = <{ayin97}>
+        question = ```{question}```       
+        """
+        keyboard = [
+            ["/gpt", "/help"]
+        ]
+        # making the markup
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         response = llm.invoke(query)
-        await update.message.reply_text(response.content.__str__())
+        await update.message.reply_text(response.content.__str__(), reply_markup=reply_markup)
         gptc = False
     else:
         mes = input(f"answer the message from {update.message.from_user.username}:")

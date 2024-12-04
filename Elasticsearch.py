@@ -50,8 +50,10 @@ def search_question(query):
 
     # Search in the 'qa_data' index
     res = es.search(index=config.index_name, body=query_body)
-
+    if len(res['hits']['hits']) ==0:
+        return None
     print("Search Results:")
     for hit in res['hits']['hits']:
         print(f"Question: {hit['_source']['question']}, Answer: {hit['_source']['answer']}, time: {hit['_source']['timestamp']}")
     return res['hits']['hits']['_source']['answer']
+    return res['hits']['hits'][0]['_source']['answer']

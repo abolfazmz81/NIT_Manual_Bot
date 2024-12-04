@@ -36,3 +36,22 @@ def index_data(question, answer):
     # Index a document
     res = es.index(index=config.index_name, document=doc)
     print(f"Indexed document: {res['_id']}")
+
+
+def search_question(query):
+    # Perform a search query for a question
+    query_body = {
+        "query": {
+            "match": {
+                "question": query
+            }
+        }
+    }
+
+    # Search in the 'qa_data' index
+    res = es.search(index=config.index_name, body=query_body)
+
+    print("Search Results:")
+    for hit in res['hits']['hits']:
+        print(f"Question: {hit['_source']['question']}, Answer: {hit['_source']['answer']}, time: {hit['_source']['timestamp']}")
+    return res['hits']['hits']['_source']['answer']

@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch
 import config
+from datetime import datetime
 
 
 # Connect to Elasticsearch
@@ -23,3 +24,15 @@ def create_index():
         print(f"Created index {index_name}")
     else:
         print(f"Index {index_name} already exists")
+
+
+def index_data(question, answer):
+    doc = {
+        "question": question,
+        "answer": answer,
+        "timestamp": datetime.now(),
+    }
+
+    # Index a document
+    res = es.index(index=config.index_name, document=doc)
+    print(f"Indexed document: {res['_id']}")

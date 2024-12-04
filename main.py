@@ -1,6 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters
 from langchain_openai import ChatOpenAI
+import Elasticsearch
 import config
 import extractor
 
@@ -72,23 +73,35 @@ async def mem(update: Update, context: CallbackContext) -> None:
     print(update.message.text)
     if gptc:
         question = update.message.text
-        query = f"""
-        Answer the question specified in triple backticks based on the text Provided in <>, and be specific about it, \
-        if you couldn't find any related information in the text, reply with irrelevant question, \
-        both text and question are in persian(farsi), and you should as well answer in persian.\n
-        text = <{ayin97}>
-        question = ```{question}```       
-        """
-        keyboard = [
-            ["/gpt", "/help"]
-        ]
-        # making the markup
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        response = llm.invoke(query)
-        await update.message.reply_text(response.content.__str__(), reply_markup=reply_markup)
-        gptc = False
+        possible_answer = Elasticsearch.search_question(question)
+        if possible_answer is not None:
+            keyboard = [
+                ["/gpt", "/help"]
+            ]
+            print("found possible answer")
+            # making the markup
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            await update.message.reply_text(possible_answer, reply_markup=reply_markup)
+
+        else:
+            query = f"""
+                    Answer the question specified in triple backticks based on the text Provided in <>, search the text to insure the answer could be there \
+                    if you couldn't find any related information in the text, reply with irrelevant question, \
+                    both text and question are in persian(farsi), and you should as well answer in persian.\n
+                    text = <{ayin97}>
+                    question = ```{question}```       
+                    """
+            keyboard = [
+                ["/gpt", "/help"]
+            ]
+            # making the markup
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            response = llm.invoke(query)
+            await update.message.reply_text(response.content.__str__(), reply_markup=reply_markup)
+            Elasticsearch.index_data(question,response.content.__str__())
+            gptc = False
     else:
-        mes = input(f"answer the message from {update.message.from_user.username}:")
+        mes = "ChatGPT is not active!"
         if mes != "":
             await update.message.reply_text(mes, reply_to_message_id=update.message.message_id)
     print("done")

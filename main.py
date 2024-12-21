@@ -13,6 +13,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", base_url="https://api.avalai.ir/v1",
 gptc = True
 ayin97 = extractor.return_97("1633766767-ayinnamehkarshenasi97-v3.pdf")
 
+ayin97 = extractor.return_97("docs/1633766767-ayinnamehkarshenasi97-v3.pdf")
 
 async def start(update: Update, context: CallbackContext) -> None:
     # determining who the user is

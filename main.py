@@ -23,9 +23,9 @@ async def start(update: Update, context: CallbackContext) -> None:
     # making the markup
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     # wlcoming the user
-    await update.message.reply_text(f'hi {name}!, welcome to the show')
+    await update.message.reply_text(f'سلام کاربر {name} خوش آمدید')
 
-    await update.message.reply_text("Please select a command!", reply_markup=reply_markup)
+    await update.message.reply_text("لطفا بخشی که از آن سوال دارید را انتخاب کنید", reply_markup=reply_markup)
 
 
 async def help(update: Update, context: CallbackContext) -> None:
@@ -40,8 +40,8 @@ async def help(update: Update, context: CallbackContext) -> None:
     # making the markup
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    await update.message.reply_text("""/gpt: Use it to ask a question from ChatGPT, Then Proceed to ask your question.\n
-    /cancel: Use it To Cancel your /gpt command""", reply_markup=reply_markup)
+    await update.message.reply_text("""/gpt: بعد انتخاب این گزینه، جایی که بنظرتان سوال از آن است را انتخاب کرده سپس سوالتان را بپرسید.\n
+    /cancel: از آن استفاده کنید تا به حالت اول برگردید بدون سوال پرسیدن""", reply_markup=reply_markup)
 
 
 async def gpt(update: Update, context: CallbackContext) -> None:

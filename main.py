@@ -4,6 +4,8 @@ from langchain_openai import ChatOpenAI
 import Elasticsearch
 import config
 import extractor
+import jdatetime
+
 
 llm = ChatOpenAI(model="gpt-4o-mini", base_url="https://api.avalai.ir/v1",
                  api_key=config.api_token)
@@ -73,6 +75,12 @@ async def mem(update: Update, context: CallbackContext) -> None:
     print(update.message.text)
     if gptc:
         question = update.message.text
+        today_shamsi = jdatetime.date.today()
+
+        question = question.replace("امروز",today_shamsi.strftime("%Y/%m/%d"))
+        question = question.replace("دیروز", (today_shamsi - jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
+        question = question.replace("فردا",(today_shamsi + jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
+
         possible_answer = Elasticsearch.search_question(question)
         if possible_answer is not None:
             keyboard = [

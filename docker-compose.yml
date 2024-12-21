@@ -1,13 +1,18 @@
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:sha256-ff15e3911c1420a4820abd86523d39f7f210bb50178c1edebf0beda9e8016a8f
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
     environment:
       - discovery.type=single-node
     ports:
       - "9200:9200"   # Expose the Elasticsearch port
     networks:
       - elastic
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/"]
+      interval: 30s
+      retries: 3
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.16.1
     ports:

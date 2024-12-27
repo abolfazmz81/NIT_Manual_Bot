@@ -15,10 +15,9 @@ def return_97(pdf_path):
             page = doc[page_num]
             blocks = page.get_text()
             blocks = re.sub(r"""دانشگاه صنعتي نوشيرواني بابل  
-    آئين نامه آموزشي دوره كارشناسي  
-     ويژه دانشجويان كارشناسي ورودي سال
-    ٧٩٣١ و پس از آن 
-    """, "", blocks)
+آئين نامه آموزشي دوره كارشناسي  
+ ويژه دانشجويان كارشناسي ورودي سال
+٧٩٣١ و پس از آن""", "", blocks)
             all_text = all_text + blocks
 
         return all_text

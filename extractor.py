@@ -3,7 +3,7 @@ import re
 import tiktoken
 
 
-def return_97(pdf_path):
+def return_doc(pdf_path):
     def extract_text(pdf_path):
         doc = fitz.open(pdf_path)
         all_text = ""

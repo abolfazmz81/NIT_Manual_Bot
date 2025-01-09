@@ -9,22 +9,24 @@ import jdatetime
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18", base_url="https://api.avalai.ir/v1",
                  api_key=config.api_token)
 
-gptc = True
-ayin97 = extractor.return_97("1633766767-ayinnamehkarshenasi97-v3.pdf")
+gptc =  False
+text = ""
+year = 0
 
-ayin97 = extractor.return_97("docs/1633766767-ayinnamehkarshenasi97-v3.pdf")
 
 async def start(update: Update, context: CallbackContext) -> None:
+    global year
+    year = 0
     # determining who the user is
     name = update.message.from_user.full_name
     print(name)
     # keyboard layout
     keyboard = [
-        ["/gpt", "/help"]
+        ["/help"]
     ]
     # making the markup
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    # wlcoming the user
+    # welcoming the user
     await update.message.reply_text(f'سلام کاربر {name} خوش آمدید')
 
     await update.message.reply_text("لطفا سال ورودی خود را بصورت کامل وارد کنید", reply_markup=reply_markup)
@@ -48,6 +50,9 @@ async def help(update: Update, context: CallbackContext) -> None:
 
 async def gpt(update: Update, context: CallbackContext) -> None:
     global gptc
+    global year
+    if year == 0:
+        return
     gptc = True
     keyboard = [
         ["/cancel"]
@@ -66,24 +71,53 @@ async def cancel(update: Update, context: CallbackContext) -> None:
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         await update.message.reply_text("چت بات غیرفعال شد", reply_markup=reply_markup)
     else:
-        await update.message.reply_text("The ChatGPT is not active")
+        keyboard = [
+            ["/gpt", "/help"]
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        await update.message.reply_text("The ChatGPT is not active",reply_markup=reply_markup)
 
 
 async def mem(update: Update, context: CallbackContext) -> None:
     global gptc
-    global ayin97
-    print(update.message.text)
+    global text
+    global year
+    #print(update.message.text)
+
+    # Determine the year of enter
+    if year == 0:
+        try:
+            num = int(update.message.text)
+        except:
+            await update.message.reply_text("سال ورودی فقط شامل عدد است", reply_to_message_id=update.message.message_id)
+            return
+        keyboard = [
+            ["/gpt", "/help"]
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        if num < 1397:
+            await update.message.reply_text(f"سال ورودی انتخاب شده مورد تایید برای دانشجوی کارشناسی نمیباشد.",
+                                            reply_to_message_id=update.message.message_id, reply_markup=reply_markup)
+            return
+        elif 1397 <= num < 1402:
+            year = 97
+        elif num >= 1402:
+            year = 402
+        await update.message.reply_text(f"سال ورودی شما {num} انتخاب شد، برای انتخاب دوباره start را فشار بدهید",
+                                        reply_to_message_id=update.message.message_id, reply_markup=reply_markup)
+        text = extractor.return_doc(f"docs/{year}/ayin.pdf")
+        return
+
     if gptc:
         question = update.message.text
         today_shamsi = jdatetime.date.today()
-
-        question = question.replace("امروز",today_shamsi.strftime("%Y/%m/%d"))
+        qe = f"من ورودی {year} هستم، سوال من اینست که:\n" + update.message.text
         # Replace time adverbs with shamsi date
         question = question.replace("امروز", today_shamsi.strftime("%Y/%m/%d"))
         question = question.replace("دیروز", (today_shamsi - jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
         question = question.replace("فردا", (today_shamsi + jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
 
-        possible_answer = Elasticsearch.search_question(question)
+        possible_answer = Elasticsearch.search_question(qe)
         if possible_answer is not None:
             keyboard = [
                 ["/gpt", "/help"]
@@ -98,7 +132,7 @@ async def mem(update: Update, context: CallbackContext) -> None:
                     Answer the question specified in triple backticks based on the text Provided in <>, search the text to insure the answer could be there \
                     if you couldn't find any related information in the text, reply with irrelevant question, \
                     both text and question are in persian(farsi), and you should as well answer in persian.\n
-                    text = <{ayin97}>
+                    text = <{text}>
                     question = ```{question}```       
                     """
             keyboard = [
@@ -108,7 +142,7 @@ async def mem(update: Update, context: CallbackContext) -> None:
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             response = llm.invoke(query)
             await update.message.reply_text(response.content.__str__(), reply_markup=reply_markup)
-            Elasticsearch.index_data(question,response.content.__str__())
+            Elasticsearch.index_data(qe, response.content.__str__())
             gptc = False
     else:
         mes = "ربات را با زدن دکمه /gpt فعال کنید."

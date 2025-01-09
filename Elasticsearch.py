@@ -42,7 +42,7 @@ def search_question(query):
     # Perform a search query for a question
     query_body = {
         "query": {
-            "match": {
+            "match_phrase": {
                 "question": query
             }
         }

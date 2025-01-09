@@ -66,7 +66,7 @@ def return_doc(pdf_path):
     sections = split_into_sections_and_subsections(text)
 
     def count_tokens(text):
-        encoding = tiktoken.encoding_for_model("gpt-4o-mini")
+        encoding = tiktoken.encoding_for_model("gpt-4o-mini-2024-07-18")
         return len(encoding.encode(text))
 
     def ensure_token_limit(sections, max_tokens=128000):

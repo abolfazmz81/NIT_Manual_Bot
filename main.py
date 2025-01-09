@@ -6,8 +6,7 @@ import config
 import extractor
 import jdatetime
 
-
-llm = ChatOpenAI(model="gpt-4o-mini", base_url="https://api.avalai.ir/v1",
+llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18", base_url="https://api.avalai.ir/v1",
                  api_key=config.api_token)
 
 gptc = True

@@ -27,7 +27,7 @@ async def start(update: Update, context: CallbackContext) -> None:
     # wlcoming the user
     await update.message.reply_text(f'سلام کاربر {name} خوش آمدید')
 
-    await update.message.reply_text("لطفا بخشی که از آن سوال دارید را انتخاب کنید", reply_markup=reply_markup)
+    await update.message.reply_text("لطفا سال ورودی خود را بصورت کامل وارد کنید", reply_markup=reply_markup)
 
 
 async def help(update: Update, context: CallbackContext) -> None:
@@ -53,7 +53,7 @@ async def gpt(update: Update, context: CallbackContext) -> None:
         ["/cancel"]
     ]
     reply = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    await update.message.reply_text("Please send the message you want to ask ChatGPT.", reply_markup=reply)
+    await update.message.reply_text("لطفا سوال خود را بپرسید", reply_markup=reply)
 
 
 async def cancel(update: Update, context: CallbackContext) -> None:
@@ -64,7 +64,7 @@ async def cancel(update: Update, context: CallbackContext) -> None:
             ["/gpt", "/help"]
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        await update.message.reply_text("The ChatGPT is inactivated",reply_markup=reply_markup)
+        await update.message.reply_text("چت بات غیرفعال شد", reply_markup=reply_markup)
     else:
         await update.message.reply_text("The ChatGPT is not active")
 
@@ -78,8 +78,10 @@ async def mem(update: Update, context: CallbackContext) -> None:
         today_shamsi = jdatetime.date.today()
 
         question = question.replace("امروز",today_shamsi.strftime("%Y/%m/%d"))
+        # Replace time adverbs with shamsi date
+        question = question.replace("امروز", today_shamsi.strftime("%Y/%m/%d"))
         question = question.replace("دیروز", (today_shamsi - jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
-        question = question.replace("فردا",(today_shamsi + jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
+        question = question.replace("فردا", (today_shamsi + jdatetime.timedelta(days=1)).strftime("%Y/%m/%d"))
 
         possible_answer = Elasticsearch.search_question(question)
         if possible_answer is not None:
@@ -109,9 +111,13 @@ async def mem(update: Update, context: CallbackContext) -> None:
             Elasticsearch.index_data(question,response.content.__str__())
             gptc = False
     else:
-        mes = "ChatGPT is not active!"
+        mes = "ربات را با زدن دکمه /gpt فعال کنید."
         if mes != "":
-            await update.message.reply_text(mes, reply_to_message_id=update.message.message_id)
+            keyboard = [
+                ["/gpt", "/help"]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            await update.message.reply_text(mes, reply_to_message_id=update.message.message_id,reply_markup=reply_markup)
     print("done")
 
 

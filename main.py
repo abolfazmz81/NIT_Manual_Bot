@@ -9,7 +9,7 @@ import jdatetime
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18", base_url="https://api.avalai.ir/v1",
                  api_key=config.api_token)
 
-gptc =  False
+gptc = False
 text = ""
 year = 0
 
@@ -75,35 +75,37 @@ async def cancel(update: Update, context: CallbackContext) -> None:
             ["/gpt", "/help"]
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        await update.message.reply_text("The ChatGPT is not active",reply_markup=reply_markup)
+        await update.message.reply_text("The ChatGPT is not active", reply_markup=reply_markup)
 
 
 async def mem(update: Update, context: CallbackContext) -> None:
     global gptc
     global text
     global year
-    #print(update.message.text)
 
     # Determine the year of enter
     if year == 0:
         try:
             num = int(update.message.text)
         except:
-            await update.message.reply_text("سال ورودی فقط شامل عدد است", reply_to_message_id=update.message.message_id)
+            await update.message.reply_text("سال ورودی فقط شامل عدد است",
+                                            reply_to_message_id=update.message.message_id)
             return
         keyboard = [
             ["/gpt", "/help"]
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         if num < 1397:
-            await update.message.reply_text(f"سال ورودی انتخاب شده مورد تایید برای دانشجوی کارشناسی نمیباشد.",
+            await update.message.reply_text(
+                f"سال ورودی انتخاب شده مورد تایید برای دانشجوی کارشناسی نمیباشد.",
                                             reply_to_message_id=update.message.message_id, reply_markup=reply_markup)
             return
         elif 1397 <= num < 1402:
             year = 97
         elif num >= 1402:
             year = 402
-        await update.message.reply_text(f"سال ورودی شما {num} انتخاب شد، برای انتخاب دوباره start را فشار بدهید",
+        await update.message.reply_text(
+            f"سال ورودی شما {num} انتخاب شد، برای انتخاب دوباره start را فشار بدهید",
                                         reply_to_message_id=update.message.message_id, reply_markup=reply_markup)
         text = extractor.return_doc(f"docs/{year}/ayin.pdf")
         return
@@ -129,7 +131,8 @@ async def mem(update: Update, context: CallbackContext) -> None:
 
         else:
             query = f"""
-                    Answer the question specified in triple backticks based on the text Provided in <>, search the text to insure the answer could be there \
+                    Answer the question specified in triple backticks based on the text Provided in <>,
+                     search the text to insure the answer could be there \
                     if you couldn't find any related information in the text, reply with irrelevant question, \
                     both text and question are in persian(farsi), and you should as well answer in persian.\n
                     text = <{text}>
@@ -151,7 +154,8 @@ async def mem(update: Update, context: CallbackContext) -> None:
                 ["/gpt", "/help"]
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-            await update.message.reply_text(mes, reply_to_message_id=update.message.message_id,reply_markup=reply_markup)
+            await update.message.reply_text(mes, reply_to_message_id=update.message.message_id,
+                                            reply_markup=reply_markup)
     print("done")
 
 

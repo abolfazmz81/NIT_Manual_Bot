@@ -13,7 +13,6 @@ else:
     print("Elasticsearch is down!")
 
 
-# Index some sample Q&A data (you can customize this)
 def create_index():
     # Create an index if it doesn't exist
     index_name = config.index_name
@@ -48,7 +47,7 @@ def search_question(query):
         }
     }
 
-    # Search in the 'qa_data' index
+    # Search in the index
     res = es.search(index=config.index_name, body=query_body)
     if len(res['hits']['hits']) ==0:
         return None

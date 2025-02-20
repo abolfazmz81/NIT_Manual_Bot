@@ -61,7 +61,7 @@ Once the bot is running, you can interact with it via **Telegram**. Simply start
 - "What are the graduation requirements?"
 - "How many credits do I need to complete my degree?"
 - "What is the university's attendance policy?"
-**Note**: Questions must be asked in **Persian**, as **Persian** is the official language of **Noshirvani University of Technology (NIT)**.
+  **Note**: Questions must be asked in **Persian**, as **Persian** is the official language of **Noshirvani University of Technology (NIT)**.
 
 ## 🔧 Deployment with Docker
 To deploy using Docker:
